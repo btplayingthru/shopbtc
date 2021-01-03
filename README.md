@@ -19,7 +19,8 @@ www.amazon.com
 Installation Steps
 ==================
 
-Adding ShopBTC if you're a developer:
+# Adding ShopBTC if you're a developer:
+
 1. Clone this repo on your local machine
 
 2. Open your chrome browser and visit `chrome://extensions`
@@ -35,4 +36,6 @@ The extension should appear in your list of extensions.
 Navigate to any of the supported domains and you should see
 prices listed in sats on any product pages.
 
-Adding ShopBTC through the Chrome Web Store:
+# Adding ShopBTC through the Chrome Web Store:
+
+(currently pending review)
