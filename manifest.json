@@ -4,7 +4,7 @@
   "description": "Show product prices in BTC (currently only supports Amazon)",
   "content_scripts": [{
     "js": ["content.js"],
-    "matches": ["https://www.amazon.com/*"]
+    "matches": ["https://www.amazon.com/*", "https://www.walmart.com/*", "https://www.potterybarn.com/*"]
   }],
   "manifest_version": 2
 }
