@@ -1,0 +1,10 @@
+{
+  "name": "Shop in BTC",
+  "version": "0.1.1",
+  "description": "Show product prices in BTC (currently only supports Amazon)",
+  "content_scripts": [{
+    "js": ["content.js"],
+    "matches": ["https://www.amazon.com/*"]
+  }],
+  "manifest_version": 2
+}
