@@ -1,10 +1,19 @@
 {
   "name": "Shop in BTC",
-  "version": "0.1.1",
-  "description": "Show product prices in BTC (currently only supports Amazon)",
+  "version": "0.1.2",
+  "description": "Show bitcoin values adjacent to any USD values",
   "content_scripts": [{
     "js": ["content.js"],
-    "matches": ["https://www.amazon.com/*", "https://www.walmart.com/*", "https://www.potterybarn.com/*"]
+    "matches": ["<all_urls>"]
   }],
+  "permissions": [
+	"tabs", "http://*/*"
+  ],
+  "icons": {
+	"16": "images/btc_icon.png",
+	"32": "images/btc_icon.png",
+	"48": "images/btc_icon.png",
+	"128": "images/btc_icon.png"
+  },
   "manifest_version": 2
 }

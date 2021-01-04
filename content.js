@@ -2,68 +2,54 @@ function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-const domains = {
-	"www.amazon.com": {
-		"ids": [
-			'priceblock_ourprice',
-			'priceblock_dealprice',
-			'price_inside_buybox',
-		],
-		"classes": [
-			'a-size-base a-color-price a-text-normal'
-		]
-	},
-	"www.walmart.com": {
-		"ids": [],
-		"classes": [
-			"price-group"
-		]
-	},
-}
 
+function add_sat_prices(exchange_rate) {
+	console.log('exchange rate: ', exchange_rate)
 
-function add_satoshi_price(satoshi_rate, element_class, element_id) {
-	if (element_id) {
-		var price_element = document.getElementById(element_id);
-		if (price_element) {
-			price = price_element.textContent.replace("$", "").replace(",", "")
-			var sat_cost = Math.ceil(price * satoshi_rate)
-			price_element.textContent += "  (" + numberWithCommas(sat_cost) + " sats)"
-		}
+	let regex = /\$( *)(((\d{1,3})(,\d{3})*)|(\d+))($|(\.\d{2}))( USD)?$/gmi
+
+	var elements = document.getElementsByTagName('*');
+
+	for (var i = 0; i < elements.length; i++) {
+	    var element = elements[i];
+
+	    for (var j = 0; j < element.childNodes.length; j++) {
+	        var node = element.childNodes[j];
+			// console.log(node, node.textContent, node.nodeType)
+	        if (node.nodeType === 3) {
+	            var text = node.nodeValue;
+	            var replacedText = text.replace(regex, function(m) {
+					// console.log(m)
+					var price = m.replace("$", "").replace(",", "")
+					var sat_cost = Math.ceil(price * exchange_rate)
+					var btc_cost = (sat_cost/100000000).toFixed(3)
+					if (btc_cost > .1) {
+						return m + "  (" + numberWithCommas(btc_cost) + " BTC)"
+					} else if (sat_cost > 10000) {
+						ksats = (sat_cost/1000).toFixed(0)
+						return m + "  (" + numberWithCommas(ksats) + "k sats)"
+					} else {
+						return m + "  (" + numberWithCommas(sat_cost) + " sats)"
+					}
+				});
+
+	            if (replacedText !== text) {
+	                element.replaceChild(document.createTextNode(replacedText), node);
+	            }
+	        }
+	    }
 	}
-
-	if (element_class) {
-		var price_elements = document.getElementsByClassName(element_class);
-		if (price_elements) {
-			for (i = 0; i < price_elements.length; i++) {
-				price = price_elements[i].textContent.replace("$", "").replace(",", "")
-				var sat_cost = Math.ceil(price * satoshi_rate)
-				price_elements[i].textContent += "  (" + numberWithCommas(sat_cost) + " sats)"
-			}
-		}
-	}
-	
+	console.log("added prices in satoshis")
 }
 
 const req = new XMLHttpRequest();
 req.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-    	// Typical action to be performed when the document is ready:
     	const response = JSON.parse(req.responseText);
 		const satoshi_per_dollar = parseFloat(response.data.rates.BTC) * 100000000
 		console.log("Satoshis per USD: ", satoshi_per_dollar)
-
 		console.log(location.hostname)
-		
-		const ids = domains[location.hostname].ids
-		for (i = 0; i < ids.length; i++) {
-			add_satoshi_price(satoshi_per_dollar, null, ids[i],);
-		}
-		
-		const classes = domains[location.hostname].classes
-		for (x = 0; x < classes.length; x++) {
-			add_satoshi_price(satoshi_per_dollar, classes[x], null);
-		}
+		add_sat_prices(satoshi_per_dollar)
     }
 };
 req.open("GET", "https://api.coinbase.com/v2/exchange-rates", true);
