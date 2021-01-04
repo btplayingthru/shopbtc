@@ -6,7 +6,7 @@ function numberWithCommas(x) {
 function add_sat_prices(exchange_rate) {
 	console.log('exchange rate: ', exchange_rate)
 
-	let regex = /\$( *)(((\d{1,3})(,\d{3})*)|(\d+))($|(\.\d{2}))( USD)?$/gmi
+	let regex = /\$( *)(((\d{1,3})(,\d{3})*)|(\d+))($|(\.\d{2}))( USD)?( )*$/gmi
 
 	var elements = document.getElementsByTagName('*');
 
