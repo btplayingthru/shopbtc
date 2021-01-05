@@ -3,8 +3,8 @@ Chrome Extension that shows product prices in BTC
 
 How it works
 ============
-The extension makes a call to Coinbase to get the latest exchange rate of USD -> BTC.  
-Then the extension will try to find any values that look like USD and append
+The extension makes a call to CoinDesk/Coinbase to get the latest exchange rate of USD/BTC.  
+Then the extension will try to find any values that look like USD on the page and append
 an equivalent value in BTC.
 
 
