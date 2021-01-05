@@ -20,6 +20,12 @@ const domains = {
 			"price-group"
 		]
 	},
+	"niftygateway.com":{
+		"ids":[],
+		"classes":[
+			"MuiTypography-root jss455 MuiTypography-body1",
+		]
+	}
 }
 
 function format_btc_price(satoshis) {
