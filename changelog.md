@@ -1,6 +1,14 @@
 # Change Log
 ============
 
+## 0.1.6 Released January 6th, 2021
+===================================
+- Better handling for text elements containing multiple price strings
+
+## 0.1.5 Released January 5th, 2021
+===================================
+- Adds some redundancy for javascript heavy pages
+
 ## 0.1.4 Released January 4th, 2021
 ===================================
 - Fix for NiftyGateway marketplace prices
