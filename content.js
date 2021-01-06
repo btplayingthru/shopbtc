@@ -1,13 +1,11 @@
+let satoshi_per_dollar;
 let regex = /((\$( *))(?!(0([0-9]*(,))))((\d{1,3}))((\d*)|(,\d{3})*)(\.\d{2}){0,1}(?!(\.\d{3})))(?!\d*,\d*)/gmi
-
 let btc_string = /(( \(((\d{1,3})(,\d{3})*)(\.\d{0,3})?([mk]{0,1} )(sats|BTC)\))|( \(NaN sats\))){1}(?!,[0-9])/gmi
-
 let with_btc_regex = /((\$( *))(([1-9])(\d{0,2})((,\d{3})*|((\d*)(?!,)))|((0)(?=\.)))(\.\d{2})?)(?![0-9])(( \(((\d{1,3})(,\d{3})*)(\.\d{0,3})?([mk]{0,1} )(sats|BTC)\))|( \(NaN sats\))){1}(?!,[0-9])/gmi
 
 function price_without_btc(text) {
 	return (text.match(regex) && !text.match(with_btc_regex))
 }
-
 
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -49,12 +47,15 @@ function format_btc_price(satoshis) {
 	let btc_cost = satoshis / 100000000;
 	let btc_price;
 
-	if (btc_cost > .1) {
+	if (btc_cost > 1000) {
+		btc_cost = (btc_cost/1000).toFixed(0)
+		btc_price = numberWithCommas(btc_cost) + "k BTC"
+	} else if (btc_cost > .99) {
 		btc_cost = btc_cost.toFixed(2)
 		btc_price = numberWithCommas(btc_cost) + " BTC"
 	} else if (satoshis > 1000000) {
 		let msats = (satoshis/1000000).toFixed(1)
-		btc_price = numberWithCommas(msats) + "m sats"
+		btc_price = numberWithCommas(msats) + "M sats"
 	} else if (satoshis > 1000) {
 		let ksats = (satoshis/1000).toFixed(0)
 		btc_price = numberWithCommas(ksats) + "k sats"
@@ -80,6 +81,7 @@ function add_btc_price_by_id(satoshi_rate, element_id) {
 			if(price_without_btc(text)){
 				var btc_price = btc_price_string(text, satoshi_rate)
 				text += btc_price
+				price_element.textContent = text
 			}
 		}
 	}
@@ -91,13 +93,11 @@ function add_btc_price_by_class(satoshi_rate, element_class) {
 		var price_elements = document.getElementsByClassName(element_class);
 		if (price_elements) {
 			for (i = 0; i < price_elements.length; i++) {
-				console.log(price_elements[i])
 				var text = price_elements[i].textContent
 				if (price_without_btc(text)) {
 					var btc_price = btc_price_string(text, satoshi_rate)
-					text.replace(regex, function(m){
-						return m + btc_price
-					})
+					text += btc_price
+					price_elements[i].textContent = text
 				}
 			}
 		}
@@ -181,7 +181,7 @@ function get_btc_price_from_coinbase() {
 			setTimeout(() => {
 				console.log("refreshing....")
 				add_sat_prices(satoshi_per_dollar);
-			}, 5000);
+			}, 7500);
 		}
 	}
 	req.open("GET", "https://api.coinbase.com/v2/exchange-rates", true)
@@ -189,8 +189,9 @@ function get_btc_price_from_coinbase() {
 }
 
 
+
 window.onload = function() {
-	let satoshi_per_dollar;
+	// let satoshi_per_dollar;
 
 	const req = new XMLHttpRequest();
 	req.onreadystatechange = function() {
@@ -205,7 +206,7 @@ window.onload = function() {
 			setTimeout(() => {
 				console.log("refreshing....")
 				add_sat_prices(satoshi_per_dollar);
-			}, 5000);
+			}, 7500);
 
 	    }
 

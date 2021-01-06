@@ -1,6 +1,11 @@
 # Change Log
 ============
 
+## 0.1.7 Released January 6th, 2021
+===================================
+- Fixes bug introduced in some scenarios in v0.1.6
+- Adds support for abbreviated values over 1000 BTC
+
 ## 0.1.6 Released January 6th, 2021
 ===================================
 - Better handling for text elements containing multiple price strings
