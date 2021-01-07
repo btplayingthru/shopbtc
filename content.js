@@ -1,11 +1,15 @@
 let satoshi_per_dollar;
 
-let usd_regex = /((\$( *))(?!(0([0-9]*(,))))((\d{1,3}))((\d*)|(,\d{3})*)(\.\d{1,2}){0,1}([MBT]?|( million| billion| trillion)?)?(?!(\.\d{3})))(?!\d*,\d*)/gmi
+// usd_regex looks for any value that looks like a USD currency denomination
+// and is not immediately followed by BTC/Bitcoin implying it is expressing
+// the relative price of BTC
+let usd_regex = /((\$( *))(?!(0([0-9]*(,))))((\d{1,3}))((\d*)|(,\d{3})*)(\.\d{1,2}){0,1}([kMBT]?|( million| billion| trillion)?)?(?!(\.\d{3})))(?!\d*,\d*)(?! (Bitcoin|bitcoin|BTC))/gmi
+let with_btc_regex = /((\$( *))(?!(0([0-9]*(,))))((\d{1,3}))((\d*)|(,\d{3})*)(\.\d{1,2}){0,1}([kMBT]?|( million| billion| trillion)?)?(?!(\.\d{3})))(?!\d*,\d*)(( \(((\d{1,3})(,\d{3})*)(\.\d{0,3})?([kM]{0,1} )(sats|BTC)\))|( \(NaN sats\))){1}(?!,[0-9])/gmi
 let btc_string = /(( \(((\d{1,3})(,\d{3})*)(\.\d{0,3})?([mk]{0,1} )(sats|BTC)\))|( \(NaN sats\))){1}(?!,[0-9])/gmi
-let with_btc_regex = /((\$( *))(([1-9])(\d{0,2})((,\d{3})*|((\d*)(?!,)))|((0)(?=\.)))(\.\d{2})?)(?![0-9])(( \(((\d{1,3})(,\d{3})*)(\.\d{0,3})?([mk]{0,1} )(sats|BTC)\))|( \(NaN sats\))){1}(?!,[0-9])/gmi
 
 function string_to_number(string) {
 	let factors = {
+		"k":100,
 		"million":1000000,
 		"M":1000000,
 		"billion":1000000000,
@@ -147,9 +151,12 @@ function add_sat_prices(exchange_rate) {
 				if (matches) {
 					var replacedText = text.replace(usd_regex, function(
 						m,
-						g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,g11,g12,g13,g14,g15,
+						g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,g11,g12,g13,g14,g15,g16,
 						offset,
 						input_string) {
+						// console.log(g16)
+						// console.log(offset)
+						// console.log(input_string)
 						var btc_price = btc_price_string(m, exchange_rate)
 						var new_price = m + btc_price
 						var match_trailing_string = input_string.split(m)[1]

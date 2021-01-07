@@ -1,6 +1,11 @@
 # Change Log
 ============
 
+## 0.1.9 Released January 7th, 2021
+===================================
+- Adds support for $\d+k pattern
+- Stops converting values that appear to be using USD as a way to value BTC (ie - $1M BTC)
+
 ## 0.1.8 Released January 7th, 2021
 ===================================
 - Recognizes abbreviated USD values (ie - $2T, $3 billion, $6M, etc)
