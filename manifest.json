@@ -1,6 +1,6 @@
 {
   "name": "Shop BTC",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "description": "Show bitcoin values adjacent to any USD values",
   "content_scripts": [{
     "js": ["content.js"],
