@@ -1,6 +1,11 @@
 # Change Log
 ============
 
+## 0.1.8 Released January 7th, 2021
+===================================
+- Recognizes abbreviated USD values (ie - $2T, $3 billion, $6M, etc)
+- Adds support for abbreviated values over 1,000,000 BTC
+
 ## 0.1.7 Released January 6th, 2021
 ===================================
 - Fixes bug introduced in some scenarios in v0.1.6

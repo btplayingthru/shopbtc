@@ -1,10 +1,31 @@
 let satoshi_per_dollar;
-let regex = /((\$( *))(?!(0([0-9]*(,))))((\d{1,3}))((\d*)|(,\d{3})*)(\.\d{2}){0,1}(?!(\.\d{3})))(?!\d*,\d*)/gmi
+
+let usd_regex = /((\$( *))(?!(0([0-9]*(,))))((\d{1,3}))((\d*)|(,\d{3})*)(\.\d{1,2}){0,1}([MBT]?|( million| billion| trillion)?)?(?!(\.\d{3})))(?!\d*,\d*)/gmi
 let btc_string = /(( \(((\d{1,3})(,\d{3})*)(\.\d{0,3})?([mk]{0,1} )(sats|BTC)\))|( \(NaN sats\))){1}(?!,[0-9])/gmi
 let with_btc_regex = /((\$( *))(([1-9])(\d{0,2})((,\d{3})*|((\d*)(?!,)))|((0)(?=\.)))(\.\d{2})?)(?![0-9])(( \(((\d{1,3})(,\d{3})*)(\.\d{0,3})?([mk]{0,1} )(sats|BTC)\))|( \(NaN sats\))){1}(?!,[0-9])/gmi
 
+function string_to_number(string) {
+	let factors = {
+		"million":1000000,
+		"M":1000000,
+		"billion":1000000000,
+		"B":1000000000,
+		"trillion":1000000000000,
+		"T":1000000000000,
+	}
+	let num = string.replace("$", "").replace(",","")
+	for (var abbr in factors) {
+		if (num.includes(abbr)) {
+			num = parseFloat(num.replace(abbr, "")) * factors[abbr]
+			return num
+		}
+	}
+	return num
+}
+
+
 function price_without_btc(text) {
-	return (text.match(regex) && !text.match(with_btc_regex))
+	return (text.match(usd_regex) && !text.match(with_btc_regex))
 }
 
 function numberWithCommas(x) {
@@ -47,7 +68,10 @@ function format_btc_price(satoshis) {
 	let btc_cost = satoshis / 100000000;
 	let btc_price;
 
-	if (btc_cost > 1000) {
+	if (btc_cost > 1000000) {
+		btc_cost = (btc_cost/1000000).toFixed(0)
+		btc_price = numberWithCommas(btc_cost) + "M BTC"
+	} else if (btc_cost > 1000) {
 		btc_cost = (btc_cost/1000).toFixed(0)
 		btc_price = numberWithCommas(btc_cost) + "k BTC"
 	} else if (btc_cost > .99) {
@@ -66,8 +90,7 @@ function format_btc_price(satoshis) {
 }
 
 function btc_price_string(price_string, exchange_rate) {
-	var price = price_string.match(regex)[0].replace("$", "").replace(",", "")
-	// var price = price_string.replace(/[^\d.-]/g, '');
+	var price = string_to_number(price_string)
 	var sat_cost = Math.ceil(price * exchange_rate)
 	var price_to_show = format_btc_price(sat_cost)
 	return " ("+ price_to_show + ")"
@@ -120,11 +143,11 @@ function add_sat_prices(exchange_rate) {
 	        if (node.nodeType === 3) {
 	            var text = node.nodeValue;
 
-				var matches = text.matchAll(regex)
+				var matches = text.matchAll(usd_regex)
 				if (matches) {
-					var replacedText = text.replace(regex, function(
+					var replacedText = text.replace(usd_regex, function(
 						m,
-						g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,g11,g12,g13,
+						g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,g11,g12,g13,g14,g15,
 						offset,
 						input_string) {
 						var btc_price = btc_price_string(m, exchange_rate)
