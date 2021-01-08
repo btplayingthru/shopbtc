@@ -1,10 +1,11 @@
 # Change Log
 ============
 
-## 0.1.9 Released January 7th, 2021
+## 0.1.9 Released January 8th, 2021
 ===================================
 - Adds support for $\d+k pattern
 - Stops converting values that appear to be using USD as a way to value BTC (ie - $1M BTC)
+- Adds basic test page and only logs to console when debugging
 
 ## 0.1.8 Released January 7th, 2021
 ===================================

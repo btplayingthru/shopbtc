@@ -1,3 +1,4 @@
+let debugging = false;
 let satoshi_per_dollar;
 
 // usd_regex looks for any value that looks like a USD currency denomination
@@ -6,6 +7,8 @@ let satoshi_per_dollar;
 let usd_regex = /((\$( *))(?!(0([0-9]*(,))))((\d{1,3}))((\d*)|(,\d{3})*)(\.\d{1,2}){0,1}([kMBT]?|( million| billion| trillion)?)?(?!(\.\d{3})))(?!\d*,\d*)(?! (Bitcoin|bitcoin|BTC))/gmi
 let with_btc_regex = /((\$( *))(?!(0([0-9]*(,))))((\d{1,3}))((\d*)|(,\d{3})*)(\.\d{1,2}){0,1}([kMBT]?|( million| billion| trillion)?)?(?!(\.\d{3})))(?!\d*,\d*)(( \(((\d{1,3})(,\d{3})*)(\.\d{0,3})?([kM]{0,1} )(sats|BTC)\))|( \(NaN sats\))){1}(?!,[0-9])/gmi
 let btc_string = /(( \(((\d{1,3})(,\d{3})*)(\.\d{0,3})?([mk]{0,1} )(sats|BTC)\))|( \(NaN sats\))){1}(?!,[0-9])/gmi
+let btc_words = /(bitcoin|btc|sats)/gmi
+
 
 function string_to_number(string) {
 	let factors = {
@@ -17,7 +20,7 @@ function string_to_number(string) {
 		"trillion":1000000000000,
 		"T":1000000000000,
 	}
-	let num = string.replace("$", "").replace(",","")
+	let num = string.replaceAll(/\$/g, "").replaceAll(/,/g,"")
 	for (var abbr in factors) {
 		if (num.includes(abbr)) {
 			num = parseFloat(num.replace(abbr, "")) * factors[abbr]
@@ -65,7 +68,7 @@ const domains = {
 			"MuiTypography-root jss642 MuiTypography-body1",
 			"MuiTypography-root jss854 MuiTypography-body1",
 		]
-	}
+	},
 }
 
 function format_btc_price(satoshis) {
@@ -116,7 +119,7 @@ function add_btc_price_by_id(satoshi_rate, element_id) {
 
 function add_btc_price_by_class(satoshi_rate, element_class) {
 	if (element_class) {
-		console.log("looking for elements with class...", element_class)
+		if(debugging){console.log("looking for elements with class...", element_class)}
 		var price_elements = document.getElementsByClassName(element_class);
 		if (price_elements) {
 			for (i = 0; i < price_elements.length; i++) {
@@ -148,24 +151,34 @@ function add_sat_prices(exchange_rate) {
 	            var text = node.nodeValue;
 
 				var matches = text.matchAll(usd_regex)
+
 				if (matches) {
 					var replacedText = text.replace(usd_regex, function(
 						m,
 						g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,g11,g12,g13,g14,g15,g16,
 						offset,
 						input_string) {
-						// console.log(g16)
-						// console.log(offset)
-						// console.log(input_string)
 						var btc_price = btc_price_string(m, exchange_rate)
 						var new_price = m + btc_price
 						var match_trailing_string = input_string.split(m)[1]
 						var trailing_btc_match = match_trailing_string.search(btc_string)
+						var btc_reference = match_trailing_string.search(btc_words)
+						if (debugging) {
+							console.log("replacing_match:")
+							console.log("match:", m)
+							console.log("last group:", g16)
+							console.log("offset position:", offset)
+							console.log("btc_price:", btc_price)
+							console.log("new_price:", new_price)
+						}
 						if (trailing_btc_match == 0) {
-							console.log("BTC already listed next to price")
+							debugging ? console.log("BTC already listed next to price") : null
+							return m
+						} else if (btc_reference < 3 && btc_reference > -1) {
+							debugging ? console.log("USD value making a BTC comparison") : null
 							return m
 						} else {
-							console.log("Added BTC price to USD regex match")
+							debugging ? console.log("Added BTC price to USD regex match") : null
 							return new_price
 						}
 					});
@@ -182,7 +195,7 @@ function add_sat_prices(exchange_rate) {
 	let domain = location.hostname.replace("www.", "");
 
 	if (domain in domains) {
-		console.log(domain)
+		debugging ? console.log(domain) : null
 		const ids = domains[domain].ids
 		for (i = 0; i < ids.length; i++) {
 			add_btc_price_by_id(exchange_rate, ids[i]);
@@ -193,7 +206,7 @@ function add_sat_prices(exchange_rate) {
 			add_btc_price_by_class(exchange_rate, classes[x]);
 		}
 	}
-	console.log("added prices in satoshis")
+	debugging ? console.log("added prices in satoshis") : null
 }
 
 function get_btc_price_from_coinbase() {
@@ -209,7 +222,7 @@ function get_btc_price_from_coinbase() {
 			console.log(location.hostname)
 			add_sat_prices(satoshi_per_dollar)
 			setTimeout(() => {
-				console.log("refreshing....")
+				debugging ? console.log("refreshing....") : null
 				add_sat_prices(satoshi_per_dollar);
 			}, 7500);
 		}
@@ -231,10 +244,9 @@ window.onload = function() {
 
 			// Coindesk returns USD per BTC
 			satoshi_per_dollar = 100000000 / response.bpi.USD.rate_float
-			console.log("CoinDesk BPI: ", satoshi_per_dollar);
 			add_sat_prices(satoshi_per_dollar);
 			setTimeout(() => {
-				console.log("refreshing....")
+				debugging ? console.log("refreshing....") : null
 				add_sat_prices(satoshi_per_dollar);
 			}, 7500);
 
