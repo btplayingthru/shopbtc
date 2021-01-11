@@ -7,7 +7,7 @@
     "matches": ["<all_urls>"]
   }],
   "permissions": [
-	"tabs", "http://*/*"
+	 "http://*/*"
   ],
   "icons": {
 	"16": "images/btc_icon.png",
