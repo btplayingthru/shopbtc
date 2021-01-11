@@ -6,9 +6,6 @@
     "js": ["content.js"],
     "matches": ["<all_urls>"]
   }],
-  "permissions": [
-	 "activeTab"
-  ],
   "icons": {
 	"16": "images/btc_icon.png",
 	"32": "images/btc_icon.png",
