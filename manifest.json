@@ -1,7 +1,7 @@
 {
   "name": "Shop BTC",
   "version": "0.1.9",
-  "description": "Show bitcoin values adjacent to any USD values",
+  "description": "Adds prices denominated in bitcoin (or satoshis) adjacent to most USD values on the pages you visit.",
   "content_scripts": [{
     "js": ["content.js"],
     "matches": ["<all_urls>"]
